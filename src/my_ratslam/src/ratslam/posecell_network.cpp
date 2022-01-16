@@ -902,12 +902,20 @@ namespace ratslam {
     return action;
   }
 
-  /* spread the energy and normalization the whole pose cell network.
-   * then,
-   * use the odometry informations for path integration by shifting the pose cell energy.
-   * finally,
-   * find the centroid of the dominant activity packet in the network
-   * */
+  /**
+   * @brief 1. Local excitation where energy is added around each active pose cell.
+   2. Local inhibition where energy is removed around each active pose cell. These first two setps
+   ensure the stabilization of the energy packets.
+   3. Global inhibition where energy is removed from all active  pose cells but not below zero.
+   4. Network energy normalization to ensure the total energy in the system is equal to one. This
+   stage ensures stability of the global pose cell system.
+   5. Use the odometric information for path integration by shifting the pose cell energy.
+   6. Identify the centroid of the dominant activity packet in the network.
+   *
+   * @param vtrans  位移速度
+   * @param vrot 角速度
+   * @param time_diff_s 时间差
+   */
   void PosecellNetwork::on_odo(double vtrans, double vrot, double time_diff_s) {
     vtrans = vtrans * time_diff_s;
     vrot = vrot * time_diff_s;
@@ -916,6 +924,7 @@ namespace ratslam {
     inhibit();
     global_inhibit();
     normalise();
+    // QUESTION 路径积分这个地方还是没有看懂
     path_integration(vtrans, vrot);
     find_best();  //找到网络中能量最大的pose cell
     odo_update = true;

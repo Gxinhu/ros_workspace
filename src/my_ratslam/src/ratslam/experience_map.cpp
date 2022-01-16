@@ -86,7 +86,9 @@ namespace ratslam {
     new_exp->goal_to_current = -1;
     new_exp->current_to_goal = -1;
 
-    if (experiences.size() != 1) on_create_link(get_current_id(), experiences.size() - 1, 0);
+    if (experiences.size() != 1) {
+      on_create_link(get_current_id(), experiences.size() - 1, 0);
+    }
 
     return experiences.size() - 1;
   }

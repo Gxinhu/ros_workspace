@@ -39,7 +39,15 @@ using boost::property_tree::ptree;
 #include <iostream>
 
 namespace ratslam {
-
+  /**
+   * @brief Get the setting from ptree object
+   *
+   * @tparam T
+   * @param var  用来存放取出值的变量
+   * @param settings  设置树
+   * @param name  取出值的 key
+   * @param default_value  如果设置里面没有，默认的值
+   */
   template <typename T> inline void get_setting_from_ptree(T& var,
                                                            boost::property_tree::ptree& settings,
                                                            std::string name, T default_value) {
@@ -51,7 +59,16 @@ namespace ratslam {
                 << ") used." << std::endl;
     }
   }
-
+  /**
+   * @brief Get the setting child object
+   * 
+   * @param child 子设置树
+   * @param settings 设置树
+   * @param name 子设置名称
+   * @param pause_on_error 
+   * @return true  取出成功
+   * @return false 取出失败
+   */
   inline bool get_setting_child(boost::property_tree::ptree& child,
                                 boost::property_tree::ptree& settings, std::string name,
                                 bool pause_on_error = true) {

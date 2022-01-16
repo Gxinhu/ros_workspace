@@ -191,6 +191,7 @@ namespace ratslam {
     double norm2d(double var, int x, int y, int z, int dim_centre);
     double get_min_delta(double d1, double d2, double max);
 
+    // 
     int PC_DIM_XY;
     int PC_DIM_TH;
     int PC_W_E_DIM;
