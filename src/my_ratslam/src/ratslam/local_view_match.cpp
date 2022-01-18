@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -49,19 +52,26 @@ namespace ratslam {
   LocalViewMatch::LocalViewMatch(ptree settings) {
     get_setting_from_ptree(VT_MIN_PATCH_NORMALISATION_STD, settings,
                            "vt_min_patch_normalisation_std", (double)0);
-    get_setting_from_ptree(VT_PATCH_NORMALISATION, settings, "vt_patch_normalise", 0);
-    get_setting_from_ptree(VT_NORMALISATION, settings, "vt_normalisation", (double)0);
+    get_setting_from_ptree(VT_PATCH_NORMALISATION, settings,
+                           "vt_patch_normalise", 0);
+    get_setting_from_ptree(VT_NORMALISATION, settings, "vt_normalisation",
+                           (double)0);
     get_setting_from_ptree(VT_SHIFT_MATCH, settings, "vt_shift_match", 25);
     get_setting_from_ptree(VT_STEP_MATCH, settings, "vt_step_match", 5);
     get_setting_from_ptree(VT_PANORAMIC, settings, "vt_panoramic", 0);
 
-    get_setting_from_ptree(VT_MATCH_THRESHOLD, settings, "vt_match_threshold", 0.03);
+    get_setting_from_ptree(VT_MATCH_THRESHOLD, settings, "vt_match_threshold",
+                           0.03);
     get_setting_from_ptree(TEMPLATE_X_SIZE, settings, "template_x_size", 1);
     get_setting_from_ptree(TEMPLATE_Y_SIZE, settings, "template_y_size", 1);
-    get_setting_from_ptree(IMAGE_VT_X_RANGE_MIN, settings, "image_crop_x_min", 0);
-    get_setting_from_ptree(IMAGE_VT_X_RANGE_MAX, settings, "image_crop_x_max", -1);
-    get_setting_from_ptree(IMAGE_VT_Y_RANGE_MIN, settings, "image_crop_y_min", 0);
-    get_setting_from_ptree(IMAGE_VT_Y_RANGE_MAX, settings, "image_crop_y_max", -1);
+    get_setting_from_ptree(IMAGE_VT_X_RANGE_MIN, settings, "image_crop_x_min",
+                           0);
+    get_setting_from_ptree(IMAGE_VT_X_RANGE_MAX, settings, "image_crop_x_max",
+                           -1);
+    get_setting_from_ptree(IMAGE_VT_Y_RANGE_MIN, settings, "image_crop_y_min",
+                           0);
+    get_setting_from_ptree(IMAGE_VT_Y_RANGE_MAX, settings, "image_crop_y_max",
+                           -1);
 
     TEMPLATE_SIZE = TEMPLATE_X_SIZE * TEMPLATE_Y_SIZE;
 
@@ -84,7 +94,8 @@ namespace ratslam {
    * @param image_height  图片高度
    */
   void LocalViewMatch::on_image(const unsigned char *view_rgb, bool greyscale,
-                                unsigned int image_width, unsigned int image_height) {
+                                unsigned int image_width,
+                                unsigned int image_height) {
     if (view_rgb == NULL) return;
 
     IMAGE_WIDTH = image_width;
@@ -105,7 +116,8 @@ namespace ratslam {
     //  如果匹配误差vt_match_id小于阈值，则将匹配到模板id设置为current_id，并保存修改前的current_id为prev_vt
     //  如果匹配误差vt_match_id大于阈值，则将该view_template存储到template，并令pre_vt=current_vt
     //  QUESTION 后面使用事件相机需要修改的地方
-    compare(vt_error, vt_match_id);  //返回匹配到的模板vt_match_id和匹配误差vt_error
+    compare(vt_error,
+            vt_match_id);  //返回匹配到的模板vt_match_id和匹配误差vt_error
     if (vt_error <= VT_MATCH_THRESHOLD) {
       set_current_vt((int)vt_match_id);
       cout << "VTM[" << setw(4) << get_current_vt() << "] " << endl;
@@ -147,6 +159,7 @@ namespace ratslam {
     int y_block_size = sub_range_y / TEMPLATE_Y_SIZE;
     int pos;
 
+    // NOTE 这里的 current view 就是一个 NXM 的矩阵
     for (unsigned int i; i < current_view.size(); i++) {
       current_view[i] = 0;
     }
@@ -155,11 +168,14 @@ namespace ratslam {
     // NOTE 采用的策略为平均池化
     //判断图片是否为灰度图：
     //      if 是：池化后保存到current_view
-    //      if not:将所有像素的RGB值进行累加转化为灰度图，池化后保存到current_view
+    //      if
+    //      not:将所有像素的RGB值进行累加转化为灰度图，池化后保存到current_view
     if (grayscale) {
-      for (int y_block = IMAGE_VT_Y_RANGE_MIN, y_block_count = 0; y_block_count < TEMPLATE_Y_SIZE;
+      for (int y_block = IMAGE_VT_Y_RANGE_MIN, y_block_count = 0;
+           y_block_count < TEMPLATE_Y_SIZE;
            y_block += y_block_size, y_block_count++) {
-        for (int x_block = IMAGE_VT_X_RANGE_MIN, x_block_count = 0; x_block_count < TEMPLATE_X_SIZE;
+        for (int x_block = IMAGE_VT_X_RANGE_MIN, x_block_count = 0;
+             x_block_count < TEMPLATE_X_SIZE;
              x_block += x_block_size, x_block_count++) {
           for (int x = x_block; x < (x_block + x_block_size); x++) {
             for (int y = y_block; y < (y_block + y_block_size); y++) {
@@ -173,19 +189,23 @@ namespace ratslam {
         }
       }
     } else {
-      for (int y_block = IMAGE_VT_Y_RANGE_MIN, y_block_count = 0; y_block_count < TEMPLATE_Y_SIZE;
+      for (int y_block = IMAGE_VT_Y_RANGE_MIN, y_block_count = 0;
+           y_block_count < TEMPLATE_Y_SIZE;
            y_block += y_block_size, y_block_count++) {
-        for (int x_block = IMAGE_VT_X_RANGE_MIN, x_block_count = 0; x_block_count < TEMPLATE_X_SIZE;
+        for (int x_block = IMAGE_VT_X_RANGE_MIN, x_block_count = 0;
+             x_block_count < TEMPLATE_X_SIZE;
              x_block += x_block_size, x_block_count++) {
           // block中像素累加，池化，block_size表示池化核的size
           for (int x = x_block; x < (x_block + x_block_size); x++) {
             for (int y = y_block; y < (y_block + y_block_size); y++) {
-              //计算在block中的像素在原图片中的坐标，view_rgb为按一维矩阵排列，所以（x,y) = (x + y *
+              //计算在block中的像素在原图片中的坐标，view_rgb为按一维矩阵排列，所以（x,y)
+              //= (x + y *
               // IMAGE_WIDTH) * 3
               pos = (x + y * IMAGE_WIDTH) * 3;
               //将RGB像素值累加并保存到current_view到转为灰度图
-              current_view[data_next] += ((double)(view_rgb[pos]) + (double)(view_rgb[pos + 1])
-                                          + (double)(view_rgb[pos + 2]));
+              current_view[data_next]
+                  += ((double)(view_rgb[pos]) + (double)(view_rgb[pos + 1])
+                      + (double)(view_rgb[pos + 2]));
             }
           }
           //全局平均
@@ -208,14 +228,15 @@ namespace ratslam {
       avg_value /= current_view.size();
       //将current_view像素值均放置于【0，1】之间
       for (unsigned int i = 0; i < current_view.size(); i++) {
-        current_view[i]
-            = std::max(0.0, std::min(current_view[i] * VT_NORMALISATION / avg_value, 1.0));
+        current_view[i] = std::max(
+            0.0, std::min(current_view[i] * VT_NORMALISATION / avg_value, 1.0));
       }
     }
 
     // now do patch normalisation
     // +- patch size on the pixel, ie 4 will give a 9x9
-    // QUESTION patch normalisation 资料比较少，反正把他认为是图片的一种预处理方法就行了
+    // QUESTION patch normalisation
+    // 资料比较少，反正把他认为是图片的一种预处理方法就行了
     if (VT_PATCH_NORMALISATION > 0) {
       // VT_PATCH_NORMALISATION=2
       int patch_size = VT_PATCH_NORMALISATION;
@@ -229,35 +250,44 @@ namespace ratslam {
       // first make a copy of the view
       std::vector<double> current_view_copy;
       current_view_copy.resize(current_view.size());
-      for (unsigned int i = 0; i < current_view.size(); i++) current_view_copy[i] = current_view[i];
+      for (unsigned int i = 0; i < current_view.size(); i++)
+        current_view_copy[i] = current_view[i];
 
       // this code could be significantly optimimised ....
       // patch normalisation
       for (int x = 0; x < TEMPLATE_X_SIZE; x++) {
         for (int y = 0; y < TEMPLATE_Y_SIZE; y++) {
           patch_sum = 0;
-          for (int patch_x = x - patch_size; patch_x < x + patch_size + 1; patch_x++) {
-            for (int patch_y = y - patch_size; patch_y < y + patch_size + 1; patch_y++) {
+          for (int patch_x = x - patch_size; patch_x < x + patch_size + 1;
+               patch_x++) {
+            for (int patch_y = y - patch_size; patch_y < y + patch_size + 1;
+                 patch_y++) {
               patch_x_clip = patch_x;
               patch_y_clip = patch_y;
               clip_view_x_y(patch_x_clip, patch_y_clip);
 
-              patch_sum += current_view_copy[patch_x_clip + patch_y_clip * TEMPLATE_X_SIZE];
+              patch_sum += current_view_copy[patch_x_clip
+                                             + patch_y_clip * TEMPLATE_X_SIZE];
             }
           }
           patch_mean = patch_sum / patch_total;
 
           patch_sum = 0;
-          for (int patch_x = x - patch_size; patch_x < x + patch_size + 1; patch_x++) {
-            for (int patch_y = y - patch_size; patch_y < y + patch_size + 1; patch_y++) {
+          for (int patch_x = x - patch_size; patch_x < x + patch_size + 1;
+               patch_x++) {
+            for (int patch_y = y - patch_size; patch_y < y + patch_size + 1;
+                 patch_y++) {
               patch_x_clip = patch_x;
               patch_y_clip = patch_y;
               clip_view_x_y(patch_x_clip, patch_y_clip);
 
-              patch_sum += ((current_view_copy[patch_x_clip + patch_y_clip * TEMPLATE_X_SIZE]
-                             - patch_mean)
-                            * (current_view_copy[patch_x_clip + patch_y_clip * TEMPLATE_X_SIZE]
-                               - patch_mean));
+              patch_sum
+                  += ((current_view_copy[patch_x_clip
+                                         + patch_y_clip * TEMPLATE_X_SIZE]
+                       - patch_mean)
+                      * (current_view_copy[patch_x_clip
+                                           + patch_y_clip * TEMPLATE_X_SIZE]
+                         - patch_mean));
             }
           }
 
@@ -269,7 +299,9 @@ namespace ratslam {
             current_view[x + y * TEMPLATE_X_SIZE] = max(
                 (double)0,
                 min(1.0,
-                    (((current_view_copy[x + y * TEMPLATE_X_SIZE] - patch_mean) / patch_std) + 3.0)
+                    (((current_view_copy[x + y * TEMPLATE_X_SIZE] - patch_mean)
+                      / patch_std)
+                     + 3.0)
                         / 6.0));
           }
         }
@@ -294,7 +326,8 @@ namespace ratslam {
     new_template->id = templates.size() - 1;
     double *data_ptr = &current_view[0];
     new_template->data.reserve(TEMPLATE_SIZE);
-    for (int i = 0; i < TEMPLATE_SIZE; i++) new_template->data.push_back(*(data_ptr++));
+    for (int i = 0; i < TEMPLATE_SIZE; i++)
+      new_template->data.push_back(*(data_ptr++));
 
     new_template->mean = current_mean;
 
@@ -305,11 +338,12 @@ namespace ratslam {
   // slen pixel shifts in each direction
   // returns the matching template and the MSE
   /**
-   * @brief 将当前 view 与 之前所有的 view template 进行滑动比较（详情见代码论文 p.12
-   ），滑动比较之后的滑动值可以 作为之后的角速度
+   * @brief 将当前 view 与 之前所有的 view template 进行滑动比较（详情见代码论文
+   p.12 ），滑动比较之后的滑动值可以 作为之后的角速度
    *
    * @param vt_err 当前view 与之前所有的 view templates 最小的 error
-   * @param vt_match_id 当前 view 与 之前所有 view template 相差最小的 template id
+   * @param vt_match_id 当前 view 与 之前所有 view template 相差最小的 template
+   id
    */
   void LocalViewMatch::compare(double &vt_err, unsigned int &vt_match_id) {
     //如果没有模板，则返回
@@ -342,11 +376,16 @@ namespace ratslam {
     double epsilon = 0.005;
     // NOTE panoramic 全景相机才需要计算相对角速度
     // QUESTION 为何全景镜头才有
+    // Update 因为只有全景相机才能直接计算偏移值，以求的角速度
     if (VT_PANORAMIC) {
+      // NOTE template 里面存放的就是池化之后的矩阵
       BOOST_FOREACH (vt, templates) {
         //如果当前current_tempate的模板的均值与匹配的模板的均值相差太大，则认为其不匹配；
-        // NOTE 均值就是所有池化块的均值 VT_MATCH_THRESHOLD 大约等于 0.054 三个数据集阈值都不一样
-        if (abs(current_mean - vt.mean) > VT_MATCH_THRESHOLD + epsilon) continue;
+        // NOTE 均值就是所有池化块的均值 VT_MATCH_THRESHOLD 大约等于 0.054
+        // 三个数据集阈值都不一样
+        if (abs(current_mean - vt.mean) > VT_MATCH_THRESHOLD + epsilon) {
+          continue;
+        }
 
         // for each vt try matching the view at different offsets
         // 错位匹配 at different offsets, 忽略y方向上的偏移，仅在x方向上偏移
@@ -362,11 +401,13 @@ namespace ratslam {
           sub_row_size = TEMPLATE_X_SIZE - offset;
 
           // do from offset to end.....0
-          for (column_row_ptr = column_start_ptr, template_row_ptr = template_start_ptr;
+          for (column_row_ptr = column_start_ptr,
+              template_row_ptr = template_start_ptr;
                column_row_ptr < column_end_ptr;
                column_row_ptr += row_size, template_row_ptr += row_size) {
             for (column_ptr = column_row_ptr, template_ptr = template_row_ptr;
-                 column_ptr < column_row_ptr + sub_row_size; column_ptr++, template_ptr++) {
+                 column_ptr < column_row_ptr + sub_row_size;
+                 column_ptr++, template_ptr++) {
               cdiff += abs(*column_ptr - *template_ptr);
             }
 
@@ -380,11 +421,13 @@ namespace ratslam {
           row_size = TEMPLATE_X_SIZE;
           column_end_ptr = &data[0] + TEMPLATE_SIZE;
           sub_row_size = offset;
-          for (column_row_ptr = column_start_ptr, template_row_ptr = template_start_ptr;
+          for (column_row_ptr = column_start_ptr,
+              template_row_ptr = template_start_ptr;
                column_row_ptr < column_end_ptr;
                column_row_ptr += row_size, template_row_ptr += row_size) {
             for (column_ptr = column_row_ptr, template_ptr = template_row_ptr;
-                 column_ptr < column_row_ptr + sub_row_size; column_ptr++, template_ptr++) {
+                 column_ptr < column_row_ptr + sub_row_size;
+                 column_ptr++, template_ptr++) {
               cdiff += abs(*column_ptr - *template_ptr);
             }
 
@@ -401,7 +444,8 @@ namespace ratslam {
       }
 
       vt_relative_rad = (double)min_offset / TEMPLATE_X_SIZE * 2.0 * M_PI;
-      if (vt_relative_rad > M_PI) vt_relative_rad = vt_relative_rad - 2.0 * M_PI;
+      if (vt_relative_rad > M_PI)
+        vt_relative_rad = vt_relative_rad - 2.0 * M_PI;
       vt_err = mindiff / (double)TEMPLATE_SIZE;
       vt_match_id = min_template;
 
@@ -409,13 +453,15 @@ namespace ratslam {
 
     } else {
       BOOST_FOREACH (vt, templates) {
-        if (abs(current_mean - vt.mean) > VT_MATCH_THRESHOLD + epsilon) continue;
+        if (abs(current_mean - vt.mean) > VT_MATCH_THRESHOLD + epsilon)
+          continue;
 
         // for each vt try matching the view at different offsets
         // try to fast break based on error already great than previous errors
         // handles 2d images shifting only in the x direction
         // note I haven't tested on a 1d yet.
-        for (offset = 0; offset < VT_SHIFT_MATCH * 2 + 1; offset += VT_STEP_MATCH) {
+        for (offset = 0; offset < VT_SHIFT_MATCH * 2 + 1;
+             offset += VT_STEP_MATCH) {
           cdiff = 0;
           template_start_ptr = &vt.data[0] + offset;
           column_start_ptr = &data[0] + VT_SHIFT_MATCH;
@@ -423,11 +469,13 @@ namespace ratslam {
           column_end_ptr = &data[0] + TEMPLATE_SIZE - VT_SHIFT_MATCH;
           sub_row_size = TEMPLATE_X_SIZE - 2 * VT_SHIFT_MATCH;
 
-          for (column_row_ptr = column_start_ptr, template_row_ptr = template_start_ptr;
+          for (column_row_ptr = column_start_ptr,
+              template_row_ptr = template_start_ptr;
                column_row_ptr < column_end_ptr;
                column_row_ptr += row_size, template_row_ptr += row_size) {
             for (column_ptr = column_row_ptr, template_ptr = template_row_ptr;
-                 column_ptr < column_row_ptr + sub_row_size; column_ptr++, template_ptr++) {
+                 column_ptr < column_row_ptr + sub_row_size;
+                 column_ptr++, template_ptr++) {
               cdiff += abs(*column_ptr - *template_ptr);
             }
 
@@ -444,7 +492,8 @@ namespace ratslam {
       }
 
       vt_relative_rad = 0;
-      vt_err = mindiff / (double)(TEMPLATE_SIZE - 2 * VT_SHIFT_MATCH * TEMPLATE_Y_SIZE);
+      vt_err = mindiff
+               / (double)(TEMPLATE_SIZE - 2 * VT_SHIFT_MATCH * TEMPLATE_Y_SIZE);
       vt_match_id = min_template;
 
       vt_error = vt_err;

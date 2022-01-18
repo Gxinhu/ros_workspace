@@ -4,10 +4,12 @@
  * visual_odometry - simple visual odometry module based on image differencing
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -36,15 +38,21 @@
 namespace ratslam {
 
   VisualOdometry::VisualOdometry(ptree settings) {
-    get_setting_from_ptree(VTRANS_IMAGE_X_MIN, settings, "vtrans_image_x_min", 0);
-    get_setting_from_ptree(VTRANS_IMAGE_X_MAX, settings, "vtrans_image_x_max", IMAGE_WIDTH);
-    get_setting_from_ptree(VTRANS_IMAGE_Y_MIN, settings, "vtrans_image_y_min", 0);
-    get_setting_from_ptree(VTRANS_IMAGE_Y_MAX, settings, "vtrans_image_y_max", IMAGE_HEIGHT);
+    get_setting_from_ptree(VTRANS_IMAGE_X_MIN, settings, "vtrans_image_x_min",
+                           0);
+    get_setting_from_ptree(VTRANS_IMAGE_X_MAX, settings, "vtrans_image_x_max",
+                           IMAGE_WIDTH);
+    get_setting_from_ptree(VTRANS_IMAGE_Y_MIN, settings, "vtrans_image_y_min",
+                           0);
+    get_setting_from_ptree(VTRANS_IMAGE_Y_MAX, settings, "vtrans_image_y_max",
+                           IMAGE_HEIGHT);
 
     get_setting_from_ptree(VROT_IMAGE_X_MIN, settings, "vrot_image_x_min", 0);
-    get_setting_from_ptree(VROT_IMAGE_X_MAX, settings, "vrot_image_x_max", IMAGE_WIDTH);
+    get_setting_from_ptree(VROT_IMAGE_X_MAX, settings, "vrot_image_x_max",
+                           IMAGE_WIDTH);
     get_setting_from_ptree(VROT_IMAGE_Y_MIN, settings, "vrot_image_y_min", 0);
-    get_setting_from_ptree(VROT_IMAGE_Y_MAX, settings, "vrot_image_y_max", IMAGE_HEIGHT);
+    get_setting_from_ptree(VROT_IMAGE_Y_MAX, settings, "vrot_image_y_max",
+                           IMAGE_HEIGHT);
 
     get_setting_from_ptree(CAMERA_FOV_DEG, settings, "camera_fov_deg", 50.0);
     get_setting_from_ptree(CAMERA_HZ, settings, "camera_hz", 10.0);
@@ -52,7 +60,8 @@ namespace ratslam {
     get_setting_from_ptree(VTRANS_SCALING, settings, "vtrans_scaling", 100.0);
     get_setting_from_ptree(VTRANS_MAX, settings, "vtrans_max", 20.0);
 
-    vtrans_profile.resize(VTRANS_IMAGE_X_MAX - VTRANS_IMAGE_X_MIN);  //裁切区域的大小
+    vtrans_profile.resize(VTRANS_IMAGE_X_MAX
+                          - VTRANS_IMAGE_X_MIN);  //裁切区域的大小
     vtrans_prev_profile.resize(VTRANS_IMAGE_X_MAX - VTRANS_IMAGE_X_MIN);
     vrot_profile.resize(VROT_IMAGE_X_MAX - VROT_IMAGE_X_MIN);
     vrot_prev_profile.resize(VROT_IMAGE_X_MAX - VROT_IMAGE_X_MIN);
@@ -60,8 +69,10 @@ namespace ratslam {
     first = true;
   }
 
-  void VisualOdometry::on_image(const unsigned char *data, bool greyscale, unsigned int image_width,
-                                unsigned int image_height, double *vtrans_ms, double *vrot_rads) {
+  void VisualOdometry::on_image(const unsigned char *data, bool greyscale,
+                                unsigned int image_width,
+                                unsigned int image_height, double *vtrans_ms,
+                                double *vrot_rads) {
     double dummy;
 
     IMAGE_WIDTH = image_width;
@@ -77,18 +88,30 @@ namespace ratslam {
       first = false;
     }
 
-    convert_view_to_view_template(&vtrans_profile[0], data, greyscale, VTRANS_IMAGE_X_MIN,
-                                  VTRANS_IMAGE_X_MAX, VTRANS_IMAGE_Y_MIN, VTRANS_IMAGE_Y_MAX);
-    visual_odo(&vtrans_profile[0], vtrans_profile.size(), &vtrans_prev_profile[0], vtrans_ms,
-               &dummy);
+    convert_view_to_view_template(&vtrans_profile[0], data, greyscale,
+                                  VTRANS_IMAGE_X_MIN, VTRANS_IMAGE_X_MAX,
+                                  VTRANS_IMAGE_Y_MIN, VTRANS_IMAGE_Y_MAX);
+    visual_odo(&vtrans_profile[0], vtrans_profile.size(),
+               &vtrans_prev_profile[0], vtrans_ms, &dummy);
 
-    convert_view_to_view_template(&vrot_profile[0], data, greyscale, VROT_IMAGE_X_MIN,
-                                  VROT_IMAGE_X_MAX, VROT_IMAGE_Y_MIN, VROT_IMAGE_Y_MAX);
-    visual_odo(&vrot_profile[0], vrot_profile.size(), &vrot_prev_profile[0], &dummy, vrot_rads);
+    convert_view_to_view_template(&vrot_profile[0], data, greyscale,
+                                  VROT_IMAGE_X_MIN, VROT_IMAGE_X_MAX,
+                                  VROT_IMAGE_Y_MIN, VROT_IMAGE_Y_MAX);
+    visual_odo(&vrot_profile[0], vrot_profile.size(), &vrot_prev_profile[0],
+               &dummy, vrot_rads);
   }
-
-  void VisualOdometry::visual_odo(double *data, unsigned short width, double *olddata,
-                                  double *vtrans_ms, double *vrot_rads) {
+  /**
+   * @brief 计算视觉里程计信息
+   *
+   * @param data trans or rotation profile
+   * @param width actually compare size
+   * @param olddata last time trans or rotation profile
+   * @param vtrans_ms 移动速度
+   * @param vrot_rads 角速度
+   */
+  void VisualOdometry::visual_odo(double *data, unsigned short width,
+                                  double *olddata, double *vtrans_ms,
+                                  double *vrot_rads) {
     double mindiff = 1e6;
     double minoffset = 0;
     double cdiff;
@@ -98,10 +121,12 @@ namespace ratslam {
     int slen = 40;
 
     int k;
-    //  data, olddata are 1D arrays of the intensity profiles  (current and previous);
-    // slen is the range of offsets in pixels to consider i.e. slen = 0 considers only the no offset
-    // case cwl is the length of the intensity profile to actually compare, and must be < than image
-    // width – 1 * slen
+    //  data, olddata are 1D arrays of the intensity profiles  (current and
+    //  previous);
+    // slen is the range of offsets in pixels to consider i.e. slen = 0
+    // considers only the no offset case
+    // cwl is the length of the intensity  profile to actually compare, and must
+    // be < than image width – 1 * slen
 
     for (offset = 0; offset < slen; offset++) {
       cdiff = 0;
@@ -136,15 +161,29 @@ namespace ratslam {
     for (unsigned int i = 0; i < width; i++) {
       olddata[i] = data[i];
     }
-    *vrot_rads = minoffset * CAMERA_FOV_DEG / IMAGE_WIDTH * CAMERA_HZ * M_PI / 180.0;
+    // 使用每一列的扫描线，看看当前的那一列和之前的哪一列相似，知道了这个偏移值就可以知道旋转角度了
+    *vrot_rads
+        = minoffset * CAMERA_FOV_DEG / IMAGE_WIDTH * CAMERA_HZ * M_PI / 180.0;
+    // 速度简单的可以看作是图片改变的速率快慢
     *vtrans_ms = mindiff * VTRANS_SCALING;
-    if (*vtrans_ms > VTRANS_MAX) *vtrans_ms = VTRANS_MAX;
+    if (*vtrans_ms > VTRANS_MAX) {
+      *vtrans_ms = VTRANS_MAX;
+    }
   }
-
-  void VisualOdometry::convert_view_to_view_template(double *current_view,
-                                                     const unsigned char *view_rgb, bool grayscale,
-                                                     int X_RANGE_MIN, int X_RANGE_MAX,
-                                                     int Y_RANGE_MIN, int Y_RANGE_MAX) {
+  /**
+   * @brief 计算输入的一张图像的一定范围内每一列的灰度值之和
+   *
+   * @param current_view trans or rotation profile
+   * @param view_rgb 图片矩阵
+   * @param grayscale 是否是灰度图
+   * @param X_RANGE_MIN  195
+   * @param X_RANGE_MAX  475
+   * @param Y_RANGE_MIN  trans 270 rotation 75
+   * @param Y_RANGE_MAX  trans 430 rotation 240
+   */
+  void VisualOdometry::convert_view_to_view_template(
+      double *current_view, const unsigned char *view_rgb, bool grayscale,
+      int X_RANGE_MIN, int X_RANGE_MAX, int Y_RANGE_MIN, int Y_RANGE_MAX) {
     unsigned int TEMPLATE_Y_SIZE = 1;
     unsigned int TEMPLATE_X_SIZE = X_RANGE_MAX - X_RANGE_MIN;
 
@@ -160,9 +199,11 @@ namespace ratslam {
     int pos;
 
     if (grayscale) {
-      for (int y_block = Y_RANGE_MIN, y_block_count = 0; y_block_count < TEMPLATE_Y_SIZE;
+      for (int y_block = Y_RANGE_MIN, y_block_count = 0;
+           y_block_count < TEMPLATE_Y_SIZE;
            y_block += y_block_size, y_block_count++) {
-        for (int x_block = X_RANGE_MIN, x_block_count = 0; x_block_count < TEMPLATE_X_SIZE;
+        for (int x_block = X_RANGE_MIN, x_block_count = 0;
+             x_block_count < TEMPLATE_X_SIZE;
              x_block += x_block_size, x_block_count++) {
           for (int x = x_block; x < (x_block + x_block_size); x++) {
             for (int y = y_block; y < (y_block + y_block_size); y++) {
@@ -176,15 +217,18 @@ namespace ratslam {
         }
       }
     } else {
-      for (int y_block = Y_RANGE_MIN, y_block_count = 0; y_block_count < TEMPLATE_Y_SIZE;
+      for (int y_block = Y_RANGE_MIN, y_block_count = 0;
+           y_block_count < TEMPLATE_Y_SIZE;
            y_block += y_block_size, y_block_count++) {
-        for (int x_block = X_RANGE_MIN, x_block_count = 0; x_block_count < TEMPLATE_X_SIZE;
+        for (int x_block = X_RANGE_MIN, x_block_count = 0;
+             x_block_count < TEMPLATE_X_SIZE;
              x_block += x_block_size, x_block_count++) {
           for (int x = x_block; x < (x_block + x_block_size); x++) {
             for (int y = y_block; y < (y_block + y_block_size); y++) {
               pos = (x + y * IMAGE_WIDTH) * 3;
-              current_view[data_next] += ((double)(view_rgb[pos]) + (double)(view_rgb[pos + 1])
-                                          + (double)(view_rgb[pos + 2]));
+              current_view[data_next]
+                  += ((double)(view_rgb[pos]) + (double)(view_rgb[pos + 1])
+                      + (double)(view_rgb[pos + 2]));
             }
           }
           current_view[data_next] /= (255.0 * 3.0);

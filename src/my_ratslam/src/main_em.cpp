@@ -63,7 +63,8 @@ bool use_graphics;
 using namespace ratslam;
 
 void odo_callback(nav_msgs::OdometryConstPtr odo, ratslam::ExperienceMap *em) {
-  ROS_DEBUG_STREAM("EM:odo_callback{" << ros::Time::now() << "} seq=" << odo->header.seq
+  ROS_DEBUG_STREAM("EM:odo_callback{" << ros::Time::now()
+                                      << "} seq=" << odo->header.seq
                                       << " v=" << odo->twist.twist.linear.x
                                       << " r=" << odo->twist.twist.angular.z);
 
@@ -72,7 +73,8 @@ void odo_callback(nav_msgs::OdometryConstPtr odo, ratslam::ExperienceMap *em) {
   //计算里程信息
   if (prev_time.toSec() > 0) {
     double time_diff = (odo->header.stamp - prev_time).toSec();
-    em->on_odo(odo->twist.twist.linear.x, odo->twist.twist.angular.z, time_diff);
+    em->on_odo(odo->twist.twist.linear.x, odo->twist.twist.angular.z,
+               time_diff);
   }
 
   static ros::Time prev_goal_update(0);
@@ -147,7 +149,7 @@ void action_callback(ratslam_ros::TopologicalActionConstPtr action,
   }
 
   em->iterate();
-
+  double cell = 0;
   pose_output.header.stamp = ros::Time::now();
   pose_output.header.seq++;
   pose_output.header.frame_id = "1";
@@ -177,8 +179,10 @@ void action_callback(ratslam_ros::TopologicalActionConstPtr action,
       em_map.node[i].pose.position.y = em->get_experience(i)->y_m;
       em_map.node[i].pose.orientation.x = 0;
       em_map.node[i].pose.orientation.y = 0;
-      em_map.node[i].pose.orientation.z = sin(em->get_experience(i)->th_rad / 2.0);
-      em_map.node[i].pose.orientation.w = cos(em->get_experience(i)->th_rad / 2.0);
+      em_map.node[i].pose.orientation.z
+          = sin(em->get_experience(i)->th_rad / 2.0);
+      em_map.node[i].pose.orientation.w
+          = cos(em->get_experience(i)->th_rad / 2.0);
     }
 
     em_map.edge_count = em->get_num_links();
@@ -193,8 +197,10 @@ void action_callback(ratslam_ros::TopologicalActionConstPtr action,
           = em->get_link(i)->d * sin(em->get_link(i)->heading_rad);
       em_map.edge[i].transform.rotation.x = 0;
       em_map.edge[i].transform.rotation.y = 0;
-      em_map.edge[i].transform.rotation.z = sin(em->get_link(i)->facing_rad / 2.0);
-      em_map.edge[i].transform.rotation.w = cos(em->get_link(i)->facing_rad / 2.0);
+      em_map.edge[i].transform.rotation.z
+          = sin(em->get_link(i)->facing_rad / 2.0);
+      em_map.edge[i].transform.rotation.w
+          = cos(em->get_link(i)->facing_rad / 2.0);
     }
     pub_em.publish(em_map);
   }
@@ -216,11 +222,15 @@ void action_callback(ratslam_ros::TopologicalActionConstPtr action,
   em_marker.pose.orientation.z = 0;
   em_marker.pose.orientation.w = 1;
   for (int i = 0; i < em->get_num_links(); i++) {
-    em_marker.points[i * 2].x = em->get_experience(em->get_link(i)->exp_from_id)->x_m;
-    em_marker.points[i * 2].y = em->get_experience(em->get_link(i)->exp_from_id)->y_m;
+    em_marker.points[i * 2].x
+        = em->get_experience(em->get_link(i)->exp_from_id)->x_m;
+    em_marker.points[i * 2].y
+        = em->get_experience(em->get_link(i)->exp_from_id)->y_m;
     em_marker.points[i * 2].z = 0;
-    em_marker.points[i * 2 + 1].x = em->get_experience(em->get_link(i)->exp_to_id)->x_m;
-    em_marker.points[i * 2 + 1].y = em->get_experience(em->get_link(i)->exp_to_id)->y_m;
+    em_marker.points[i * 2 + 1].x
+        = em->get_experience(em->get_link(i)->exp_to_id)->x_m;
+    em_marker.points[i * 2 + 1].y
+        = em->get_experience(em->get_link(i)->exp_to_id)->y_m;
     em_marker.points[i * 2 + 1].z = 0;
   }
 
@@ -241,9 +251,11 @@ void set_goal_pose_callback(geometry_msgs::PoseStampedConstPtr pose,
 
 int main(int argc, char *argv[]) {
   ROS_INFO_STREAM(
-      argv[0] << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
+      argv[0]
+      << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
   ROS_INFO_STREAM("RatSLAM algorithm by Michael Milford and Gordon Wyeth");
-  ROS_INFO_STREAM("Distributed under the GNU GPL v3, see the included license file.");
+  ROS_INFO_STREAM(
+      "Distributed under the GNU GPL v3, see the included license file.");
 
   if (argc < 2) {
     ROS_FATAL_STREAM("USAGE: " << argv[0] << " <config_file>");
@@ -255,7 +267,8 @@ int main(int argc, char *argv[]) {
 
   get_setting_child(ratslam_settings, settings, "ratslam", true);
   get_setting_child(general_settings, settings, "general", true);
-  get_setting_from_ptree(topic_root, general_settings, "topic_root", (std::string) "");
+  get_setting_from_ptree(topic_root, general_settings, "topic_root",
+                         (std::string) "");
 
   if (!ros::isInitialized()) {
     ros::init(argc, argv, "RatSLAMExperienceMap");
@@ -264,23 +277,24 @@ int main(int argc, char *argv[]) {
 
   ratslam::ExperienceMap *em = new ratslam::ExperienceMap(ratslam_settings);
 
-  pub_em
-      = node.advertise<ratslam_ros::TopologicalMap>(topic_root + "/ExperienceMap/Map", 1);
+  pub_em = node.advertise<ratslam_ros::TopologicalMap>(
+      topic_root + "/ExperienceMap/Map", 1);
   pub_em_markers = node.advertise<visualization_msgs::Marker>(
       topic_root + "/ExperienceMap/MapMarker", 1);
 
   pub_pose = node.advertise<geometry_msgs::PoseStamped>(
       topic_root + "/ExperienceMap/RobotPose", 1);
 
-  pub_goal_path
-      = node.advertise<nav_msgs::Path>(topic_root + "/ExperienceMap/PathToGoal", 1);
+  pub_goal_path = node.advertise<nav_msgs::Path>(
+      topic_root + "/ExperienceMap/PathToGoal", 1);
 
   ros::Subscriber sub_odometry = node.subscribe<nav_msgs::Odometry>(
-      topic_root + "/odom", 0, boost::bind(odo_callback, _1, em), ros::VoidConstPtr(),
-      ros::TransportHints().tcpNoDelay());
-  ros::Subscriber sub_action = node.subscribe<ratslam_ros::TopologicalAction>(
-      topic_root + "/PoseCell/TopologicalAction", 0, boost::bind(action_callback, _1, em),
+      topic_root + "/odom", 0, boost::bind(odo_callback, _1, em),
       ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay());
+  ros::Subscriber sub_action = node.subscribe<ratslam_ros::TopologicalAction>(
+      topic_root + "/PoseCell/TopologicalAction", 0,
+      boost::bind(action_callback, _1, em), ros::VoidConstPtr(),
+      ros::TransportHints().tcpNoDelay());
   ros::Subscriber sub_goal = node.subscribe<geometry_msgs::PoseStamped>(
       topic_root + "/ExperienceMap/SetGoalPose", 0,
       boost::bind(set_goal_pose_callback, _1, em), ros::VoidConstPtr(),
