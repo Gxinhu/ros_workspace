@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -59,7 +62,8 @@ namespace ratslam {
     double decay;
     std::vector<unsigned int> exps;
 
-    template <typename Archive> void serialize(Archive& ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned int version) {
       ar& id;
       ar& pc_x& pc_y& pc_th;
       ar& decay;
@@ -77,6 +81,12 @@ namespace ratslam {
 
     enum PosecellAction { NO_ACTION = 0, CREATE_NODE, CREATE_EDGE, SET_NODE };
 
+    /**
+     * @brief Construct a new Posecell Network:: Posecell Network object
+     * 会初始化一个吸引子网络
+     *
+     * @param settings 配置文件
+     */
     PosecellNetwork(ptree settings);
     ~PosecellNetwork();
 
@@ -101,9 +111,12 @@ namespace ratslam {
 
     unsigned int get_current_exp_id() { return current_exp; }
 
-    double get_relative_rad() { return vt_delta_pc_th * 2.0 * M_PI / PC_DIM_TH; }
+    double get_relative_rad() {
+      return vt_delta_pc_th * 2.0 * M_PI / PC_DIM_TH;
+    }
 
-    template <typename Archive> void save(Archive& ar, const unsigned int version) const {
+    template <typename Archive>
+    void save(Archive& ar, const unsigned int version) const {
       ar& PC_DIM_XY;
       ar& PC_DIM_TH;
       ar& PC_W_E_DIM;
@@ -125,7 +138,8 @@ namespace ratslam {
           for (i = 0; i < PC_DIM_XY; i++) ar& posecells[k][j][i];
     }
 
-    template <typename Archive> void load(Archive& ar, const unsigned int version) {
+    template <typename Archive>
+    void load(Archive& ar, const unsigned int version) {
       ar& PC_DIM_XY;
       ar& PC_DIM_TH;
       ar& PC_W_E_DIM;
@@ -184,14 +198,15 @@ namespace ratslam {
     void pose_cell_builder();
     bool pose_cell_excite_helper(int x, int y, int z);
     bool pose_cell_inhibit_helper(int x, int y, int z);
-    void circshift2d(double* array, double* array_buffer, int dimx, int dimy, int shiftx,
-                     int shifty);
+    void circshift2d(double* array, double* array_buffer, int dimx, int dimy,
+                     int shiftx, int shifty);
     int rot90_square(double** array, int dim, int rot);
-    int generate_wrap(int* wrap, int start1, int end1, int start2, int end2, int start3, int end3);
+    int generate_wrap(int* wrap, int start1, int end1, int start2, int end2,
+                      int start3, int end3);
     double norm2d(double var, int x, int y, int z, int dim_centre);
     double get_min_delta(double d1, double d2, double max);
 
-    // 
+    //
     int PC_DIM_XY;
     int PC_DIM_TH;
     int PC_W_E_DIM;

@@ -40,7 +40,6 @@
 using namespace std;
 
 namespace ratslam {
-
   PosecellNetwork::PosecellNetwork(ptree settings) {
     /*
      ** pose cell constants.
@@ -57,12 +56,15 @@ namespace ratslam {
     get_setting_from_ptree(PC_W_E_VAR, settings, "pc_w_e_var", 1);
     get_setting_from_ptree(PC_W_I_VAR, settings, "pc_w_i_var", 2);
 
-    get_setting_from_ptree(PC_GLOBAL_INHIB, settings, "pc_global_inhib", 0.00002);
+    get_setting_from_ptree(PC_GLOBAL_INHIB, settings, "pc_global_inhib",
+                           0.00002);
 
     get_setting_from_ptree(VT_ACTIVE_DECAY, settings, "vt_active_decay", 1.0);
-    get_setting_from_ptree(PC_VT_INJECT_ENERGY, settings, "pc_vt_inject_energy", 0.15);
+    get_setting_from_ptree(PC_VT_INJECT_ENERGY, settings, "pc_vt_inject_energy",
+                           0.15);
     get_setting_from_ptree(PC_CELL_X_SIZE, settings, "pc_cell_x_size", 1.0);
-    get_setting_from_ptree(EXP_DELTA_PC_THRESHOLD, settings, "exp_delta_pc_threshold", 2.0);
+    get_setting_from_ptree(EXP_DELTA_PC_THRESHOLD, settings,
+                           "exp_delta_pc_threshold", 2.0);
 
     get_setting_from_ptree(PC_VT_RESTORE, settings, "pc_vt_restore", 0.05);
 
@@ -86,7 +88,8 @@ namespace ratslam {
     PC_C_SIZE_TH = (2.0 * M_PI) / PC_DIM_TH;
 
     // set the sizes, in here Posecell is a double type
-    posecells_memory_size = sizeof(Posecell) * PC_DIM_XY * PC_DIM_XY * PC_DIM_TH;
+    posecells_memory_size
+        = sizeof(Posecell) * PC_DIM_XY * PC_DIM_XY * PC_DIM_TH;
     posecells_elements = PC_DIM_XY * PC_DIM_XY * PC_DIM_TH;  //元素个数
 
     // allocate the memory
@@ -115,17 +118,21 @@ namespace ratslam {
 
     // for path integration
     pca_new_rot_ptr = (Posecell **)malloc(sizeof(Posecell *) * (PC_DIM_XY + 2));
-    pca_new_rot_ptr2 = (Posecell **)malloc(sizeof(Posecell *) * (PC_DIM_XY + 2));
+    pca_new_rot_ptr2
+        = (Posecell **)malloc(sizeof(Posecell *) * (PC_DIM_XY + 2));
     for (i = 0; i < PC_DIM_XY + 2; i++) {
       pca_new_rot_ptr[i] = &pca_new_memory[(i * (PC_DIM_XY + 2))];
-      pca_new_rot_ptr2[i]
-          = &pca_new_memory[(PC_DIM_XY + 2) * (PC_DIM_XY + 2) + (i * (PC_DIM_XY + 2))];
+      pca_new_rot_ptr2[i] = &pca_new_memory[(PC_DIM_XY + 2) * (PC_DIM_XY + 2)
+                                            + (i * (PC_DIM_XY + 2))];
     }
 
-    posecells_plane_th = (Posecell *)malloc(sizeof(Posecell) * (PC_DIM_XY + 2) * (PC_DIM_XY + 2));
+    posecells_plane_th = (Posecell *)malloc(sizeof(Posecell) * (PC_DIM_XY + 2)
+                                            * (PC_DIM_XY + 2));
 
-    PC_W_EXCITE = (double *)malloc(sizeof(double) * PC_W_E_DIM * PC_W_E_DIM * PC_W_E_DIM);
-    PC_W_INHIB = (double *)malloc(sizeof(double) * PC_W_I_DIM * PC_W_I_DIM * PC_W_I_DIM);
+    PC_W_EXCITE = (double *)malloc(sizeof(double) * PC_W_E_DIM * PC_W_E_DIM
+                                   * PC_W_E_DIM);
+    PC_W_INHIB = (double *)malloc(sizeof(double) * PC_W_I_DIM * PC_W_I_DIM
+                                  * PC_W_I_DIM);
 
     posecells[(int)best_th][(int)best_y][(int)best_x] = 1;
 
@@ -138,23 +145,25 @@ namespace ratslam {
     PC_I_XY_WRAP = (int *)malloc((PC_DIM_XY + PC_W_I_DIM - 1) * sizeof(int));
     PC_I_TH_WRAP = (int *)malloc((PC_DIM_TH + PC_W_I_DIM - 1) * sizeof(int));
 
-    generate_wrap(PC_E_XY_WRAP, PC_DIM_XY - PC_W_E_DIM_HALF, PC_DIM_XY, 0, PC_DIM_XY, 0,
-                  PC_W_E_DIM_HALF);
-    generate_wrap(PC_E_TH_WRAP, PC_DIM_TH - PC_W_E_DIM_HALF, PC_DIM_TH, 0, PC_DIM_TH, 0,
-                  PC_W_E_DIM_HALF);
-    generate_wrap(PC_I_XY_WRAP, PC_DIM_XY - PC_W_I_DIM_HALF, PC_DIM_XY, 0, PC_DIM_XY, 0,
-                  PC_W_I_DIM_HALF);
-    generate_wrap(PC_I_TH_WRAP, PC_DIM_TH - PC_W_I_DIM_HALF, PC_DIM_TH, 0, PC_DIM_TH, 0,
-                  PC_W_I_DIM_HALF);
+    generate_wrap(PC_E_XY_WRAP, PC_DIM_XY - PC_W_E_DIM_HALF, PC_DIM_XY, 0,
+                  PC_DIM_XY, 0, PC_W_E_DIM_HALF);
+    generate_wrap(PC_E_TH_WRAP, PC_DIM_TH - PC_W_E_DIM_HALF, PC_DIM_TH, 0,
+                  PC_DIM_TH, 0, PC_W_E_DIM_HALF);
+    generate_wrap(PC_I_XY_WRAP, PC_DIM_XY - PC_W_I_DIM_HALF, PC_DIM_XY, 0,
+                  PC_DIM_XY, 0, PC_W_I_DIM_HALF);
+    generate_wrap(PC_I_TH_WRAP, PC_DIM_TH - PC_W_I_DIM_HALF, PC_DIM_TH, 0,
+                  PC_DIM_TH, 0, PC_W_I_DIM_HALF);
 
     PC_CELLS_TO_AVG = 3;
-    PC_AVG_XY_WRAP = (int *)malloc((PC_DIM_XY + 2 * PC_CELLS_TO_AVG) * sizeof(int));
-    PC_AVG_TH_WRAP = (int *)malloc((PC_DIM_TH + 2 * PC_CELLS_TO_AVG) * sizeof(int));
+    PC_AVG_XY_WRAP
+        = (int *)malloc((PC_DIM_XY + 2 * PC_CELLS_TO_AVG) * sizeof(int));
+    PC_AVG_TH_WRAP
+        = (int *)malloc((PC_DIM_TH + 2 * PC_CELLS_TO_AVG) * sizeof(int));
 
-    generate_wrap(PC_AVG_XY_WRAP, PC_DIM_XY - PC_CELLS_TO_AVG, PC_DIM_XY, 0, PC_DIM_XY, 0,
-                  PC_CELLS_TO_AVG);
-    generate_wrap(PC_AVG_TH_WRAP, PC_DIM_TH - PC_CELLS_TO_AVG, PC_DIM_TH, 0, PC_DIM_TH, 0,
-                  PC_CELLS_TO_AVG);
+    generate_wrap(PC_AVG_XY_WRAP, PC_DIM_XY - PC_CELLS_TO_AVG, PC_DIM_XY, 0,
+                  PC_DIM_XY, 0, PC_CELLS_TO_AVG);
+    generate_wrap(PC_AVG_TH_WRAP, PC_DIM_TH - PC_CELLS_TO_AVG, PC_DIM_TH, 0,
+                  PC_DIM_TH, 0, PC_CELLS_TO_AVG);
 
     // sine and cosine lookups
     PC_XY_SUM_SIN_LOOKUP = (double *)malloc(PC_DIM_XY * sizeof(double));
@@ -163,15 +172,19 @@ namespace ratslam {
     PC_TH_SUM_COS_LOOKUP = (double *)malloc(PC_DIM_TH * sizeof(double));
 
     for (i = 0; i < PC_DIM_XY; i++) {
-      PC_XY_SUM_SIN_LOOKUP[i] = sin((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_XY);
-      PC_XY_SUM_COS_LOOKUP[i] = cos((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_XY);
+      PC_XY_SUM_SIN_LOOKUP[i]
+          = sin((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_XY);
+      PC_XY_SUM_COS_LOOKUP[i]
+          = cos((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_XY);
     }
 
     for (i = 0; i < PC_DIM_TH; i++) {
-      PC_TH_SUM_SIN_LOOKUP[i] = sin((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_TH);
-      PC_TH_SUM_COS_LOOKUP[i] = cos((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_TH);
+      PC_TH_SUM_SIN_LOOKUP[i]
+          = sin((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_TH);
+      PC_TH_SUM_COS_LOOKUP[i]
+          = cos((double)(i + 1) * 2.0 * M_PI / (double)PC_DIM_TH);
     }
-
+    // NOTE 抑制和激活权重是固定的，一开始计算好即可
     //计算激活的高斯权重PC_W_EXCITE
     double total = 0;
     int k, next = 0;
@@ -235,17 +248,24 @@ namespace ratslam {
   }
 
   bool PosecellNetwork::inject(int act_x, int act_y, int act_z, double energy) {
-    if (act_x < PC_DIM_XY && act_x >= 0 && act_y < PC_DIM_XY && act_y >= 0 && act_z < PC_DIM_TH
-        && act_z >= 0)
+    if (act_x < PC_DIM_XY && act_x >= 0 && act_y < PC_DIM_XY && act_y >= 0
+        && act_z < PC_DIM_TH && act_z >= 0)
       posecells[act_z][act_y][act_x] += energy;
 
     return true;
   }
-
+  /**
+   * @brief 对于能量值大于0的地方进行局部激活
+   *
+   * @return true
+   * @return false
+   */
   bool PosecellNetwork::excite(void) {
     int i, j, k;
 
     // set all of pca_new to 0
+    // pca_new_memory 和 pca_new
+    // 使用同一个地址，只是样子不一样一个是矩阵，一个是向量
     memset(pca_new_memory, 0, posecells_memory_size);
 
     // loop in all three dimensions
@@ -264,7 +284,12 @@ namespace ratslam {
     memcpy(posecells_memory, pca_new_memory, posecells_memory_size);
     return true;
   }
-
+  /**
+   * @brief 对于能量值大于 0 的地方就行局部抑制
+   *
+   * @return true
+   * @return false
+   */
   bool PosecellNetwork::inhibit(void) {
     int i, j, k;
 
@@ -285,12 +310,18 @@ namespace ratslam {
     }
 
     for (i = 0; i < posecells_elements; i++) {
+      // 减去抑制的值
       posecells_memory[i] -= pca_new_memory[i];
     }
 
     return true;
   }
-
+  /**
+   * @brief 进行全局抑制
+   *
+   * @return true
+   * @return false
+   */
   bool PosecellNetwork::global_inhibit() {
     int i;
     for (i = 0; i < posecells_elements; i++) {
@@ -302,7 +333,14 @@ namespace ratslam {
     }
     return true;
   }
-
+  /**
+   * @brief
+   * 对网络能量进行归一化处理，使得网路整体能量相加起来等于1，这样可以保证 pose
+   * cell system 的稳定性
+   *
+   * @return true
+   * @return false
+   */
   bool PosecellNetwork::normalise(void) {
     int i;
     double total = 0;
@@ -354,15 +392,17 @@ namespace ratslam {
       // the moment) % work out the weight contribution to the NE cell from the
       // SW, NW, SE cells % given vtrans and the direction % weight_sw = v *
       // cos(th) * v * sin(th) % weight_se = (1 - v * cos(th)) * v * sin(th) %
-      // weight_nw = (1 - v * sin(th)) * v * sin(th) % weight_ne = 1 - weight_sw -
-      // weight_se - weight_nw % think in terms of NE divided into 4 rectangles
-      // with the sides % given by vtrans and the angle
+      // weight_nw = (1 - v * sin(th)) * v * sin(th) % weight_ne = 1 - weight_sw
+      // - weight_se - weight_nw % think in terms of NE divided into 4
+      // rectangles with the sides % given by vtrans and the angle
       // pca_new=zeros(PARAMS.PC_DIM_XY+2);
-      memset(pca_new_memory, 0, sizeof(double) * (PC_DIM_XY + 2) * (PC_DIM_XY + 2));
+      memset(pca_new_memory, 0,
+             sizeof(double) * (PC_DIM_XY + 2) * (PC_DIM_XY + 2));
 
       // pca_new(2:end-1,2:end-1) = pca90;
       for (j = 0; j < PC_DIM_XY; j++) {
-        memcpy(&pca_new_rot_ptr[j + 1][1], &posecells[dir_pc][j][0], sizeof(double) * PC_DIM_XY);
+        memcpy(&pca_new_rot_ptr[j + 1][1], &posecells[dir_pc][j][0],
+               sizeof(double) * PC_DIM_XY);
       }
 
       // weight_sw = vtrans^2 *cos(dir90) * sin(dir90);
@@ -381,9 +421,9 @@ namespace ratslam {
 
       /* if (weight_sw < 0 || weight_se < 0 || weight_nw < 0 || weight_ne < 0)
        {
-       printf("WARNING: weights are negative, vtrans(%f) is either negative or too
-       big\n", vtrans); printf("WARNING: continuing, but expect possible failures
-       soon! Update POSECELL_VTRANS_SCALING to fix this.\n", vtrans);
+       printf("WARNING: weights are negative, vtrans(%f) is either negative or
+       too big\n", vtrans); printf("WARNING: continuing, but expect possible
+       failures soon! Update POSECELL_VTRANS_SCALING to fix this.\n", vtrans);
        }*/
 
       // % circular shift and multiple by the contributing weight
@@ -398,9 +438,10 @@ namespace ratslam {
 
       // first row
       for (i = 1; i < PC_DIM_XY + 2; i++) {
-        pca_new_rot_ptr2[0][i] = pca_new_rot_ptr[0][i] * weight_ne
-                                 + pca_new_rot_ptr[0][i - 1] * weight_se
-                                 + pca_new_rot_ptr[PC_DIM_XY + 1][i] * weight_nw;
+        pca_new_rot_ptr2[0][i]
+            = pca_new_rot_ptr[0][i] * weight_ne
+              + pca_new_rot_ptr[0][i - 1] * weight_se
+              + pca_new_rot_ptr[PC_DIM_XY + 1][i] * weight_nw;
       }
 
       for (j = 1; j < PC_DIM_XY + 2; j++) {
@@ -417,7 +458,8 @@ namespace ratslam {
         }
       }
 
-      circshift2d(pca_new_rot_ptr[0], posecells_plane_th, PC_DIM_XY + 2, PC_DIM_XY + 2, 1, 1);
+      circshift2d(pca_new_rot_ptr[0], posecells_plane_th, PC_DIM_XY + 2,
+                  PC_DIM_XY + 2, 1, 1);
 
       for (i = 0; i < (PC_DIM_XY + 2) * (PC_DIM_XY + 2); i++) {
         pca_new_rot_ptr2[0][i] += pca_new_rot_ptr[0][i] * weight_sw;
@@ -445,7 +487,8 @@ namespace ratslam {
 
       // % unrotate the pose cell xy layer
       // pc.Posecells(:,:,dir_pc) = rot90(pca90, 4 - floor(dir * 2/pi));
-      rot90_square(posecells[dir_pc], PC_DIM_XY, 4 - (int)floor(dir * 2.0 / M_PI));
+      rot90_square(posecells[dir_pc], PC_DIM_XY,
+                   4 - (int)floor(dir * 2.0 / M_PI));
       // end
 
       // end
@@ -498,8 +541,8 @@ namespace ratslam {
             assert(newk2 < PC_DIM_TH);
             assert(newk1 >= 0);
             assert(newk2 >= 0);
-            posecells[k][j][i]
-                = pca_new[newk1][j][i] * (1.0 - weight) + pca_new[newk2][j][i] * weight;
+            posecells[k][j][i] = pca_new[newk1][j][i] * (1.0 - weight)
+                                 + pca_new[newk2][j][i] * weight;
             // assert(posecells[k][j][i] >= 0);
           }
         }
@@ -509,7 +552,12 @@ namespace ratslam {
 
     return true;
   }
-
+  /**
+   * @brief 找到网络中能量最大的细胞，由于存在 wrap 所以不能简单地查找，还要计算
+   * warp 之后的数值
+   *
+   * @return double
+   */
   double PosecellNetwork::find_best() {
     int i, j, k;
     double x = -1, y = -1, th = -1;
@@ -547,11 +595,14 @@ namespace ratslam {
           //  posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]][PC_AVG_XY_WRAP[i]];
 
           z_sums[PC_AVG_TH_WRAP[k]]
-              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]][PC_AVG_XY_WRAP[i]];
+              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]]
+                          [PC_AVG_XY_WRAP[i]];
           y_sums[PC_AVG_XY_WRAP[j]]
-              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]][PC_AVG_XY_WRAP[i]];
+              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]]
+                          [PC_AVG_XY_WRAP[i]];
           x_sums[PC_AVG_XY_WRAP[i]]
-              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]][PC_AVG_XY_WRAP[i]];
+              += posecells[PC_AVG_TH_WRAP[k]][PC_AVG_XY_WRAP[j]]
+                          [PC_AVG_XY_WRAP[i]];
         }
       }
     }
@@ -600,8 +651,10 @@ namespace ratslam {
       th -= PC_DIM_TH;
     }
 
-    if (x < 0 || y < 0 || th < 0 || x > PC_DIM_XY || y > PC_DIM_XY || th > PC_DIM_TH) {
-      cout << "ERROR: " << x << ", " << y << ", " << th << " out of range" << endl;
+    if (x < 0 || y < 0 || th < 0 || x > PC_DIM_XY || y > PC_DIM_XY
+        || th > PC_DIM_TH) {
+      cout << "ERROR: " << x << ", " << y << ", " << th << " out of range"
+           << endl;
     }
 
     best_x = x;
@@ -624,7 +677,8 @@ namespace ratslam {
   double PosecellNetwork::get_delta_pc(double x, double y, double th) {
     double pc_th_corrected = best_th - vt_delta_pc_th;
     if (pc_th_corrected < 0) pc_th_corrected = PC_DIM_TH + pc_th_corrected;
-    if (pc_th_corrected >= PC_DIM_TH) pc_th_corrected = pc_th_corrected - PC_DIM_TH;
+    if (pc_th_corrected >= PC_DIM_TH)
+      pc_th_corrected = pc_th_corrected - PC_DIM_TH;
     return sqrt(pow(get_min_delta(best_x, x, PC_DIM_XY), 2)
                 + pow(get_min_delta(best_y, y, PC_DIM_XY), 2)
                 + pow(get_min_delta(pc_th_corrected, th, PC_DIM_TH), 2));
@@ -650,7 +704,8 @@ namespace ratslam {
 
           // for every pose cell, multiply the current energy by
           // a pdf to spread the energy (PC_W_EXCITE is a 3d pdf)
-          pca_new[zw][yw][xw] += posecells[z][y][x] * PC_W_EXCITE[excite_index++];
+          pca_new[zw][yw][xw]
+              += posecells[z][y][x] * PC_W_EXCITE[excite_index++];
         }
       }
     }
@@ -679,8 +734,9 @@ namespace ratslam {
     return true;
   }
 
-  void PosecellNetwork::circshift2d(double *array, double *array_buffer, int dimx, int dimy,
-                                    int shiftx, int shifty) {
+  void PosecellNetwork::circshift2d(double *array, double *array_buffer,
+                                    int dimx, int dimy, int shiftx,
+                                    int shifty) {
     if (shifty == 0) {
       if (shiftx == 0) {
         return;
@@ -688,11 +744,15 @@ namespace ratslam {
 
       memcpy(array_buffer, array, dimx * dimy * sizeof(double));
     } else if (shifty > 0) {
-      memcpy(array_buffer, &array[(dimy - shifty) * dimx], shifty * dimx * sizeof(double));
-      memcpy(&array_buffer[shifty * dimx], array, (dimy - shifty) * dimx * sizeof(double));
+      memcpy(array_buffer, &array[(dimy - shifty) * dimx],
+             shifty * dimx * sizeof(double));
+      memcpy(&array_buffer[shifty * dimx], array,
+             (dimy - shifty) * dimx * sizeof(double));
     } else {
-      memcpy(array_buffer, &array[-shifty * dimx], (dimy + shifty) * dimx * sizeof(double));
-      memcpy(&array_buffer[(dimy + shifty) * dimx], array, -shifty * dimx * sizeof(double));
+      memcpy(array_buffer, &array[-shifty * dimx],
+             (dimy + shifty) * dimx * sizeof(double));
+      memcpy(&array_buffer[(dimy + shifty) * dimx], array,
+             -shifty * dimx * sizeof(double));
     }
 
     if (shiftx == 0) {
@@ -700,7 +760,8 @@ namespace ratslam {
     } else if (shiftx > 0) {
       int i;
       for (i = 0; i < dimy; i++) {
-        memcpy(&array[i * dimx], &array_buffer[i * dimx + dimx - shiftx], shiftx * sizeof(double));
+        memcpy(&array[i * dimx], &array_buffer[i * dimx + dimx - shiftx],
+               shiftx * sizeof(double));
         memcpy(&array[i * dimx + shiftx], &array_buffer[i * dimx],
                (dimx - shiftx) * sizeof(double));
       }
@@ -709,7 +770,8 @@ namespace ratslam {
       for (i = 0; i < dimy; i++) {
         memcpy(&array[i * dimx], &array_buffer[i * dimx - shiftx],
                (dimx + shiftx) * sizeof(double));
-        memcpy(&array[i * dimx + dimx + shiftx], &array_buffer[i * dimx], -shiftx * sizeof(double));
+        memcpy(&array[i * dimx + dimx + shiftx], &array_buffer[i * dimx],
+               -shiftx * sizeof(double));
       }
     }
   }
@@ -761,8 +823,10 @@ namespace ratslam {
           for (quad = 0; quad < 4; quad++) {
             is1 = id;
             js1 = jd;
-            id = (int)(a * ((float)(is1)-centre) + b * ((float)(js1)-centre) + centre);
-            jd = (int)(c * ((float)(is1)-centre) + d * ((float)(js1)-centre) + centre);
+            id = (int)(a * ((float)(is1)-centre) + b * ((float)(js1)-centre)
+                       + centre);
+            jd = (int)(c * ((float)(is1)-centre) + d * ((float)(js1)-centre)
+                       + centre);
             tmp_new = array[jd][id];
             array[jd][id] = tmp_old;
             tmp_old = tmp_new;
@@ -775,9 +839,21 @@ namespace ratslam {
     }
     return true;
   }
-
-  int PosecellNetwork::generate_wrap(int *wrap, int start1, int end1, int start2, int end2,
-                                     int start3, int end3) {
+  /**
+   * @brief 生成 wrap ,主要就是将 第一组和第三组交换一下位置
+   *
+   * @param wrap
+   * @param start1 7
+   * @param end1 10
+   * @param start2 0
+   * @param end2 10
+   * @param start3 0
+   * @param end3 3
+   * @return int
+   */
+  int PosecellNetwork::generate_wrap(int *wrap, int start1, int end1,
+                                     int start2, int end2, int start3,
+                                     int end3) {
     int i, j;
     i = 0;
     for (j = start1; j < end1; i++, j++) {
@@ -793,10 +869,22 @@ namespace ratslam {
     }
     return 1;
   }
-
-  double PosecellNetwork::norm2d(double var, int x, int y, int z, int dim_centre) {
+  /**
+   * @brief 计算高斯激活抑制权重
+   *
+   * @param var 抑制和激活方差
+   * (和论文中是不一致的，论文中位置和头朝向方差是不一样的)
+   * @param x
+   * @param y
+   * @param z
+   * @param dim_centre
+   * @return double
+   */
+  double PosecellNetwork::norm2d(double var, int x, int y, int z,
+                                 int dim_centre) {
     return 1.0 / (var * sqrt(2.0 * M_PI))
-           * exp((-(x - dim_centre) * (x - dim_centre) - (y - dim_centre) * (y - dim_centre)
+           * exp((-(x - dim_centre) * (x - dim_centre)
+                  - (y - dim_centre) * (y - dim_centre)
                   - (z - dim_centre) * (z - dim_centre))
                  / (2.0 * var * var));
   }
@@ -841,7 +929,8 @@ namespace ratslam {
       experience = &experiences[current_exp];
 
       //计算该experience保存的细胞位置与best细胞的欧式距离
-      delta_pc = get_delta_pc(experience->x_pc, experience->y_pc, experience->th_pc);
+      delta_pc
+          = get_delta_pc(experience->x_pc, experience->y_pc, experience->th_pc);
 
       PosecellVisualTemplate *pcvt = &visual_templates[current_vt];
       if (pcvt->exps.size() == 0) {
@@ -862,7 +951,8 @@ namespace ratslam {
           if (current_exp == pcvt->exps[i]) continue;
 
           experience = &experiences[pcvt->exps[i]];
-          delta_pc = get_delta_pc(experience->x_pc, experience->y_pc, experience->th_pc);
+          delta_pc = get_delta_pc(experience->x_pc, experience->y_pc,
+                                  experience->th_pc);
 
           if (delta_pc < min_delta) {
             min_delta = delta_pc;
@@ -883,7 +973,8 @@ namespace ratslam {
         //如果当前节点没匹配到，且其视图模板没变，说明是同一视图模板下的不同节点
         //      创建新的experience和CREATE_NODE
         if (current_exp != (unsigned)matched_exp_id) {  // avoid matching itself
-          if (matched_exp_id == -1) {  // can not find the match exp, create new exp node
+          if (matched_exp_id
+              == -1) {  // can not find the match exp, create new exp node
             create_experience();
             action = CREATE_NODE;
           } else {
@@ -903,13 +994,16 @@ namespace ratslam {
   }
 
   /**
-   * @brief 1. Local excitation where energy is added around each active pose cell.
-   2. Local inhibition where energy is removed around each active pose cell. These first two setps
-   ensure the stabilization of the energy packets.
-   3. Global inhibition where energy is removed from all active  pose cells but not below zero.
-   4. Network energy normalization to ensure the total energy in the system is equal to one. This
-   stage ensures stability of the global pose cell system.
-   5. Use the odometric information for path integration by shifting the pose cell energy.
+   * @brief 1. Local excitation where energy is added around each active pose
+   cell.
+   2. Local inhibition where energy is removed around each active pose cell.
+   These first two setps ensure the stabilization of the energy packets.
+   3. Global inhibition where energy is removed from all active  pose cells but
+   not below zero.
+   4. Network energy normalization to ensure the total energy in the system is
+   equal to one. This stage ensures stability of the global pose cell system.
+   5. Use the odometric information for path integration by shifting the pose
+   cell energy.
    6. Identify the centroid of the dominant activity packet in the network.
    *
    * @param vtrans  位移速度
@@ -917,6 +1011,7 @@ namespace ratslam {
    * @param time_diff_s 时间差
    */
   void PosecellNetwork::on_odo(double vtrans, double vrot, double time_diff_s) {
+    // 速度乘于时间就是变化量
     vtrans = vtrans * time_diff_s;
     vrot = vrot * time_diff_s;
 
@@ -926,6 +1021,7 @@ namespace ratslam {
     normalise();
     // QUESTION 路径积分这个地方还是没有看懂
     path_integration(vtrans, vrot);
+    // wrap 那部分还是没有看懂的
     find_best();  //找到网络中能量最大的pose cell
     odo_update = true;
   }
@@ -940,11 +1036,10 @@ namespace ratslam {
     pcvt->decay = VT_ACTIVE_DECAY;
   }
 
-  /* when the vt is a new template: create new pvt, and activate the id of this new pvt.
-   * when the vt is matched: find the accordance pvt, inject the energy into this pvt.
-   * input:
-   *      vt: 当前激活的模板id
-   *      vt_rad: relative_rad,在全景照片中根据图像计算出的relative_rad
+  /* when the vt is a new template: create new pvt, and activate the id of this
+   * new pvt. when the vt is matched: find the accordance pvt, inject the energy
+   * into this pvt. input: vt: 当前激活的模板id vt_rad:
+   * relative_rad,在全景照片中根据图像计算出的relative_rad
    *      */
   void PosecellNetwork::on_view_template(unsigned int vt, double vt_rad) {
     PosecellVisualTemplate *pcvt;  // create an PosecellVisualTemplate
@@ -969,15 +1064,22 @@ namespace ratslam {
 
         // this line is magic. ask michael about it
         // 根据匹配到的PoseCellVisualTemplate将能量注入匹配到PoseCell Network中
-        double energy = PC_VT_INJECT_ENERGY * 1.0 / 30.0 * (30.0 - exp(1.2 * pcvt->decay));
+        double energy = PC_VT_INJECT_ENERGY * 1.0 / 30.0
+                        * (30.0 - exp(1.2 * pcvt->decay));
         if (energy > 0) {
           vt_delta_pc_th = vt_rad / (2.0 * M_PI) * PC_DIM_TH;
           // 当是全景照片时，补偿根据图像计算的匹配角度偏离
-          double pc_th_corrected = pcvt->pc_th + vt_rad / (2.0 * M_PI) * PC_DIM_TH;
-          if (pc_th_corrected < 0) pc_th_corrected = PC_DIM_TH + pc_th_corrected;
-          if (pc_th_corrected >= PC_DIM_TH) pc_th_corrected = pc_th_corrected - PC_DIM_TH;
+          double pc_th_corrected
+              = pcvt->pc_th + vt_rad / (2.0 * M_PI) * PC_DIM_TH;
+          if (pc_th_corrected < 0) {
+            pc_th_corrected = PC_DIM_TH + pc_th_corrected;
+          }
+          if (pc_th_corrected >= PC_DIM_TH) {
+            pc_th_corrected = pc_th_corrected - PC_DIM_TH;
+          }
           //将能量注入到Posecell网络
-          inject((int)pcvt->pc_x, (int)pcvt->pc_y, (int)pc_th_corrected, energy);
+          inject((int)pcvt->pc_x, (int)pcvt->pc_y, (int)pc_th_corrected,
+                 energy);
         }
       }
     }
@@ -985,7 +1087,9 @@ namespace ratslam {
     //恢复PoseCellVisualTemplates,全局抑制
     for (unsigned int i = 0; i < visual_templates.size(); i++) {
       visual_templates[i].decay -= PC_VT_RESTORE;
-      if (visual_templates[i].decay < VT_ACTIVE_DECAY) visual_templates[i].decay = VT_ACTIVE_DECAY;
+      if (visual_templates[i].decay < VT_ACTIVE_DECAY) {
+        visual_templates[i].decay = VT_ACTIVE_DECAY;
+      }
     }
 
     prev_vt = current_vt;
