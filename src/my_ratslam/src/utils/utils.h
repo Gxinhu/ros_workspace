@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -48,34 +51,36 @@ namespace ratslam {
    * @param name  取出值的 key
    * @param default_value  如果设置里面没有，默认的值
    */
-  template <typename T> inline void get_setting_from_ptree(T& var,
-                                                           boost::property_tree::ptree& settings,
-                                                           std::string name, T default_value) {
+  template <typename T>
+  inline void get_setting_from_ptree(T& var,
+                                     boost::property_tree::ptree& settings,
+                                     std::string name, T default_value) {
     try {
       var = settings.get<T>(name);
     } catch (boost::property_tree::ptree_bad_path pbp) {
       var = default_value;
-      std::cout << "SETTINGS(warning): " << name << " not found so default (" << default_value
-                << ") used." << std::endl;
+      std::cout << "SETTINGS(warning): " << name << " not found so default ("
+                << default_value << ") used." << std::endl;
     }
   }
   /**
    * @brief Get the setting child object
-   * 
+   *
    * @param child 子设置树
    * @param settings 设置树
    * @param name 子设置名称
-   * @param pause_on_error 
+   * @param pause_on_error
    * @return true  取出成功
    * @return false 取出失败
    */
   inline bool get_setting_child(boost::property_tree::ptree& child,
-                                boost::property_tree::ptree& settings, std::string name,
-                                bool pause_on_error = true) {
+                                boost::property_tree::ptree& settings,
+                                std::string name, bool pause_on_error = true) {
     try {
       child = settings.get_child(name);
     } catch (boost::property_tree::ptree_bad_path pbp) {
-      std::cout << "SETTINGS(error): " << name << " child not found." << std::endl;
+      std::cout << "SETTINGS(error): " << name << " child not found."
+                << std::endl;
       //		if (pause_on_error)
       //			std::cin.get();
       return false;
@@ -101,8 +106,8 @@ namespace ratslam {
     return angle;
   }
 
-  //% Get the signed delta angle from angle1 to angle2 handling the wrap from 2pi
-  //% to 0.
+  //% Get the signed delta angle from angle1 to angle2 handling the wrap from
+  //2pi % to 0.
   inline double get_signed_delta_rad(double angle1, double angle2) {
     double dir = clip_rad_180(angle2 - angle1);
 

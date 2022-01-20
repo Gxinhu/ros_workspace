@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -48,12 +51,13 @@ ros::Publisher pub_vo;
 using namespace ratslam;
 
 void image_callback(sensor_msgs::ImageConstPtr image) {
-  ROS_DEBUG_STREAM("VO:image_callback{" << ros::Time::now() << "} seq=" << image->header.seq);
+  ROS_DEBUG_STREAM("VO:image_callback{" << ros::Time::now()
+                                        << "} seq=" << image->header.seq);
 
   static nav_msgs::Odometry odom_output;
 
-  vo->on_image(&image->data[0], (image->encoding == "bgr8" ? false : true), image->width,
-               image->height, &odom_output.twist.twist.linear.x,
+  vo->on_image(&image->data[0], (image->encoding == "bgr8" ? false : true),
+               image->width, image->height, &odom_output.twist.twist.linear.x,
                &odom_output.twist.twist.angular.z);
 
   odom_output.header.stamp = image->header.stamp;
@@ -63,9 +67,12 @@ void image_callback(sensor_msgs::ImageConstPtr image) {
 }
 
 int main(int argc, char *argv[]) {
-  ROS_INFO_STREAM(argv[0] << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
+  ROS_INFO_STREAM(
+      argv[0]
+      << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
   ROS_INFO_STREAM("RatSLAM algorithm by Michael Milford and Gordon Wyeth");
-  ROS_INFO_STREAM("Distributed under the GNU GPL v3, see the included license file.");
+  ROS_INFO_STREAM(
+      "Distributed under the GNU GPL v3, see the included license file.");
 
   if (argc < 2) {
     ROS_FATAL_STREAM("USAGE: " << argv[0] << " <config_file>");
@@ -78,7 +85,8 @@ int main(int argc, char *argv[]) {
   read_ini(argv[1], settings);
   ratslam::get_setting_child(vo_settings, settings, "visual_odometry", true);
   ratslam::get_setting_child(general_settings, settings, "general", true);
-  ratslam::get_setting_from_ptree(topic_root, general_settings, "topic_root", (std::string) "");
+  ratslam::get_setting_from_ptree(topic_root, general_settings, "topic_root",
+                                  (std::string) "");
 
   vo = new ratslam::VisualOdometry(vo_settings);
 
@@ -92,7 +100,8 @@ int main(int argc, char *argv[]) {
   image_transport::ImageTransport it(node);
   //订阅相机图像
   //回调函数只需要指定函数名称即可
-  image_transport::Subscriber sub = it.subscribe(topic_root + "/camera/image", 1, image_callback);
+  image_transport::Subscriber sub
+      = it.subscribe(topic_root + "/camera/image", 1, image_callback);
 
   ros::spin();
 

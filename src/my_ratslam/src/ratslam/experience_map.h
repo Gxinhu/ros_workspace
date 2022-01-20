@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -65,7 +68,8 @@ namespace ratslam {
     int exp_from_id;
     double delta_time_s;
 
-    template <typename Archive> void serialize(Archive& ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned int version) {
       ar& d;
       ar& heading_rad;
       ar& facing_rad;
@@ -92,7 +96,8 @@ namespace ratslam {
     double time_from_current_s;
     unsigned int goal_to_current, current_to_goal;
 
-    template <typename Archive> void serialize(Archive& ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned int version) {
       ar& id;
       ar& x_m& y_m& th_rad;
       ar& vt_id;
@@ -140,7 +145,9 @@ namespace ratslam {
     bool calculate_path_to_goal(double time_s);
     bool get_goal_waypoint();
     void clear_goal_list() { goal_list.clear(); }
-    int get_current_goal_id() { return (goal_list.size() == 0) ? -1 : (int)goal_list.front(); }
+    int get_current_goal_id() {
+      return (goal_list.size() == 0) ? -1 : (int)goal_list.front();
+    }
     void delete_current_goal() { goal_list.pop_front(); }
     bool get_goal_success() { return goal_success; }
     double get_subgoal_m() const;
@@ -150,7 +157,8 @@ namespace ratslam {
 
     unsigned int get_goal_path_final_exp() { return goal_path_final_exp_id; }
 
-    template <typename Archive> void serialize(Archive& ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned int version) {
       ar& EXP_LOOPS;
       ar& EXP_CORRECTION;
       ar& MAX_GOALS;

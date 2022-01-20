@@ -16,8 +16,8 @@
 #include <sstream>
 #include <string>
 
-double time_diff_to_double(unsigned long sec2, unsigned long nsec2, unsigned long sec1,
-                           unsigned long nsec1) {
+double time_diff_to_double(unsigned long sec2, unsigned long nsec2,
+                           unsigned long sec1, unsigned long nsec1) {
   double rsec, rnsec;
 
   rsec = sec2 - sec1;
@@ -34,7 +34,8 @@ double time_diff_to_double(unsigned long sec2, unsigned long nsec2, unsigned lon
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    std::cout << argv[0] << "(ERROR): Usage: ratslam config_file.txt" << std::endl;
+    std::cout << argv[0] << "(ERROR): Usage: ratslam config_file.txt"
+              << std::endl;
     cin.get();
     return -1;
   }
@@ -51,16 +52,19 @@ int main(int argc, char* argv[]) {
   std::istringstream iss;
 
   // read the video filename from the settings
-  gri::get_setting_from_ptree<std::string>(dataset_video_filename, settings, "gri.robot_name", "");
+  gri::get_setting_from_ptree<std::string>(dataset_video_filename, settings,
+                                           "gri.robot_name", "");
   dataset_video_filename = "log_" + dataset_video_filename + ".avi";
 
   // read the csv filename from the settings
-  gri::get_setting_from_ptree<std::string>(dataset_csv_filename, settings, "gri.robot_name", "");
+  gri::get_setting_from_ptree<std::string>(dataset_csv_filename, settings,
+                                           "gri.robot_name", "");
   dataset_csv_filename = "log_" + dataset_csv_filename + ".txt";
 
   video_reader.open(dataset_video_filename);
   if (!video_reader.isOpened()) {
-    std::cout << argv[0] << "(ERROR): Failed to open video " << dataset_video_filename << std::endl;
+    std::cout << argv[0] << "(ERROR): Failed to open video "
+              << dataset_video_filename << std::endl;
     cin.get();
     return -1;
   }
@@ -69,8 +73,8 @@ int main(int argc, char* argv[]) {
   // velocities, and time differences
   std::ifstream csv_in(dataset_csv_filename.c_str());
   if (!csv_in.is_open()) {
-    std::cout << argv[0] << "(ERROR): Failed to open csv file " << dataset_csv_filename
-              << std::endl;
+    std::cout << argv[0] << "(ERROR): Failed to open csv file "
+              << dataset_csv_filename << std::endl;
     cin.get();
     return -1;
   }
@@ -93,8 +97,8 @@ int main(int argc, char* argv[]) {
   boost::property_tree::ptree ratslam_graphics_settings;
   gri::get_setting_child(ratslam_graphics_settings, settings, "draw");
   IrrEventReceiver Event_Receiver;
-  ratslam::RatslamGraphics* ratslam_graphics
-      = new ratslam::RatslamGraphics(ratslam_graphics_settings, &Event_Receiver, ratslam);
+  ratslam::RatslamGraphics* ratslam_graphics = new ratslam::RatslamGraphics(
+      ratslam_graphics_settings, &Event_Receiver, ratslam);
 
   // discard one frame
   video_reader.grab();
@@ -126,7 +130,8 @@ int main(int argc, char* argv[]) {
     iss.str(csv_line);
     iss >> current_nsec;
 
-    delta_time_s = time_diff_to_double(current_sec, current_nsec, last_sec, last_nsec);
+    delta_time_s
+        = time_diff_to_double(current_sec, current_nsec, last_sec, last_nsec);
     last_sec = current_sec;
     last_nsec = current_nsec;
 

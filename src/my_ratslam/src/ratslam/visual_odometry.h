@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -43,10 +46,12 @@ namespace ratslam {
   public:
     VisualOdometry(ptree settings);
 
-    void on_image(const unsigned char *data, bool greyscale, unsigned int image_width,
-                  unsigned int image_height, double *vtrans_ms, double *vrot_rads);
+    void on_image(const unsigned char *data, bool greyscale,
+                  unsigned int image_width, unsigned int image_height,
+                  double *vtrans_ms, double *vrot_rads);
 
-    template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive &ar, const unsigned int version) {
       ar &IMAGE_HEIGHT;
       ar &IMAGE_WIDTH;
 
@@ -105,12 +110,14 @@ namespace ratslam {
 
     bool first;
 
-    void visual_odo(double *data, unsigned short width, double *olddata, double *vtrans_ms,
-                    double *vrot_rads);
+    void visual_odo(double *data, unsigned short width, double *olddata,
+                    double *vtrans_ms, double *vrot_rads);
 
-    void convert_view_to_view_template(double *current_view, const unsigned char *view_rgb,
-                                       bool grayscale, int X_RANGE_MIN, int X_RANGE_MAX,
-                                       int Y_RANGE_MIN, int Y_RANGE_MAX);
+    void convert_view_to_view_template(double *current_view,
+                                       const unsigned char *view_rgb,
+                                       bool grayscale, int X_RANGE_MIN,
+                                       int X_RANGE_MAX, int Y_RANGE_MIN,
+                                       int Y_RANGE_MAX);
   };
 
 };  // namespace ratslam

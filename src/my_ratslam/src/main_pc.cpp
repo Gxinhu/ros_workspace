@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -54,18 +57,20 @@ ratslam_ros::TopologicalAction pc_output;
 // path integration and pulish pc_output to main_em
 void odo_callback(nav_msgs::OdometryConstPtr odo, ratslam::PosecellNetwork *pc,
                   ros::Publisher *pub_pc) {
-  ROS_DEBUG_STREAM("PC:odo_callback{" << ros::Time::now() << "} seq=" << odo->header.seq
+  ROS_DEBUG_STREAM("PC:odo_callback{" << ros::Time::now()
+                                      << "} seq=" << odo->header.seq
                                       << " v=" << odo->twist.twist.linear.x
                                       << " r=" << odo->twist.twist.angular.z);
-  // You can also see we specified a time equal to 0. For tf, time 0 means "the latest available"
-  // transform in the buffer
+  // You can also see we specified a time equal to 0. For tf, time 0 means "the
+  // latest available" transform in the buffer
   static ros::Time prev_time(0);
 
   if (prev_time.toSec() > 0) {
     double time_diff = (odo->header.stamp - prev_time).toSec();
 
     pc_output.src_id = pc->get_current_exp_id();
-    pc->on_odo(odo->twist.twist.linear.x, odo->twist.twist.angular.z, time_diff);
+    pc->on_odo(odo->twist.twist.linear.x, odo->twist.twist.angular.z,
+               time_diff);
     pc_output.action = pc->get_action();
     if (pc_output.action != ratslam::PosecellNetwork::NO_ACTION) {
       pc_output.header.stamp = ros::Time::now();
@@ -73,10 +78,11 @@ void odo_callback(nav_msgs::OdometryConstPtr odo, ratslam::PosecellNetwork *pc,
       pc_output.dest_id = pc->get_current_exp_id();
       pc_output.relative_rad = pc->get_relative_rad();
       pub_pc->publish(pc_output);
-      ROS_DEBUG_STREAM("PC:action_publish{odo}{" << ros::Time::now() << "} action{"
-                                                 << pc_output.header.seq << "}=" << pc_output.action
-                                                 << " src=" << pc_output.src_id
-                                                 << " dest=" << pc_output.dest_id);
+      ROS_DEBUG_STREAM("PC:action_publish{odo}{"
+                       << ros::Time::now() << "} action{"
+                       << pc_output.header.seq << "}=" << pc_output.action
+                       << " src=" << pc_output.src_id
+                       << " dest=" << pc_output.dest_id);
     }
 
 #ifdef HAVE_IRRLICHT
@@ -90,10 +96,11 @@ void odo_callback(nav_msgs::OdometryConstPtr odo, ratslam::PosecellNetwork *pc,
 }
 
 //根据激活的local_view_cell的id向对应的pose_cell inject energy
-void template_callback(ratslam_ros::ViewTemplateConstPtr vt, ratslam::PosecellNetwork *pc,
-                       ros::Publisher *pub_pc) {
-  ROS_DEBUG_STREAM("PC:vt_callback{" << ros::Time::now() << "} seq=" << vt->header.seq
-                                     << " id=" << vt->current_id << " rad=" << vt->relative_rad);
+void template_callback(ratslam_ros::ViewTemplateConstPtr vt,
+                       ratslam::PosecellNetwork *pc, ros::Publisher *pub_pc) {
+  ROS_DEBUG_STREAM("PC:vt_callback{"
+                   << ros::Time::now() << "} seq=" << vt->header.seq
+                   << " id=" << vt->current_id << " rad=" << vt->relative_rad);
 
   pc->on_view_template(vt->current_id, vt->relative_rad);
 
@@ -106,9 +113,12 @@ void template_callback(ratslam_ros::ViewTemplateConstPtr vt, ratslam::PosecellNe
 }
 
 int main(int argc, char *argv[]) {
-  ROS_INFO_STREAM(argv[0] << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
+  ROS_INFO_STREAM(
+      argv[0]
+      << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
   ROS_INFO_STREAM("RatSLAM algorithm by Michael Milford and Gordon Wyeth");
-  ROS_INFO_STREAM("Distributed under the GNU GPL v3, see the included license file.");
+  ROS_INFO_STREAM(
+      "Distributed under the GNU GPL v3, see the included license file.");
 
   if (argc < 2) {
     ROS_FATAL_STREAM("USAGE: " << argv[0] << " <config_file>");
@@ -120,7 +130,8 @@ int main(int argc, char *argv[]) {
 
   get_setting_child(ratslam_settings, settings, "ratslam", true);
   get_setting_child(general_settings, settings, "general", true);
-  get_setting_from_ptree(topic_root, general_settings, "topic_root", (std::string) "");
+  get_setting_from_ptree(topic_root, general_settings, "topic_root",
+                         (std::string) "");
 
   //初始化一个RatSLAMPoseCells节点
   if (!ros::isInitialized()) {
@@ -135,11 +146,12 @@ int main(int argc, char *argv[]) {
       topic_root + "/PoseCell/TopologicalAction", 0);
 
   ros::Subscriber sub_odometry = node.subscribe<nav_msgs::Odometry>(
-      topic_root + "/odom", 0, boost::bind(odo_callback, _1, pc, &pub_pc), ros::VoidConstPtr(),
-      ros::TransportHints().tcpNoDelay());
-  ros::Subscriber sub_template = node.subscribe<ratslam_ros::ViewTemplate>(
-      topic_root + "/LocalView/Template", 0, boost::bind(template_callback, _1, pc, &pub_pc),
+      topic_root + "/odom", 0, boost::bind(odo_callback, _1, pc, &pub_pc),
       ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay());
+  ros::Subscriber sub_template = node.subscribe<ratslam_ros::ViewTemplate>(
+      topic_root + "/LocalView/Template", 0,
+      boost::bind(template_callback, _1, pc, &pub_pc), ros::VoidConstPtr(),
+      ros::TransportHints().tcpNoDelay());
 #ifdef HAVE_IRRLICHT
   boost::property_tree::ptree draw_settings;
   get_setting_child(draw_settings, settings, "draw", true);
@@ -153,4 +165,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-

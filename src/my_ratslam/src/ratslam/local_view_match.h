@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -60,7 +63,8 @@ namespace ratslam {
     std::vector<double> data;
     double mean;
 
-    template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive &ar, const unsigned int version) {
       ar &id;
       ar &data;
       ar &mean;
@@ -75,14 +79,15 @@ namespace ratslam {
 
     ~LocalViewMatch();
 
-    void on_image(const unsigned char *view_rgb, bool greyscale, unsigned int image_width,
-                  unsigned int image_height);
+    void on_image(const unsigned char *view_rgb, bool greyscale,
+                  unsigned int image_width, unsigned int image_height);
 
     int get_current_vt() { return current_vt; }
 
     double get_relative_rad() { return vt_relative_rad; }
 
-    template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
+    template <typename Archive>
+    void serialize(Archive &ar, const unsigned int version) {
       ar &VT_SHIFT_MATCH;
       ar &VT_STEP_MATCH;
       ar &VT_MATCH_THRESHOLD;

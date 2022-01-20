@@ -40,7 +40,12 @@
 using namespace std;
 
 namespace ratslam {
-  PosecellNetwork::PosecellNetwork(ptree settings) {
+  PosecellNetwork::PosecellNetwork(ptree settings)
+      : best_x(floor((double)PC_DIM_XY / 2.0)),
+        best_y(floor((double)PC_DIM_XY / 2.0)),
+        best_th(floor((double)PC_DIM_TH / 2.0)),
+        current_vt(0),
+        current_exp(0) {
     /*
      ** pose cell constants.
      */
@@ -69,12 +74,6 @@ namespace ratslam {
     get_setting_from_ptree(PC_VT_RESTORE, settings, "pc_vt_restore", 0.05);
 
     // the starting position within the posecell network
-    best_x = floor((double)PC_DIM_XY / 2.0);
-    best_y = floor((double)PC_DIM_XY / 2.0);
-    best_th = floor((double)PC_DIM_TH / 2.0);
-
-    current_exp = 0;
-    current_vt = 0;
 
     pose_cell_builder();
 

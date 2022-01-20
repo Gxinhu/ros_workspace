@@ -1,13 +1,16 @@
 /*
  * openRatSLAM
  *
- * utils - General purpose utility helper functions mainly for angles and readings settings
+ * utils - General purpose utility helper functions mainly for angles and
+ * readings settings
  *
  * Copyright (C) 2012
- * David Ball (david.ball@qut.edu.au) (1), Scott Heath (scott.heath@uqconnect.edu.au) (2)
+ * David Ball (david.ball@qut.edu.au) (1), Scott Heath
+ * (scott.heath@uqconnect.edu.au) (2)
  *
  * RatSLAM algorithm by:
- * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford, gordon.wyeth]@qut.edu.au)
+ * Michael Milford (1) and Gordon Wyeth (1) ([michael.milford,
+ * gordon.wyeth]@qut.edu.au)
  *
  * 1. Queensland University of Technology, Australia
  * 2. The University of Queensland, Australia
@@ -79,9 +82,9 @@ public:
         break;
     }
 
-    driver->drawVertexPrimitiveList((void*)&vertices[0], vertices.size(), &indices[0],
-                                    primitive_count, irr::video::EVT_STANDARD, this->primitive_type,
-                                    irr::video::EIT_32BIT);
+    driver->drawVertexPrimitiveList(
+        (void*)&vertices[0], vertices.size(), &indices[0], primitive_count,
+        irr::video::EVT_STANDARD, this->primitive_type, irr::video::EIT_32BIT);
 
     /*switch (primitive_type)
     {
@@ -92,7 +95,8 @@ public:
                             {
                                     continue;
                             }
-                            driver->draw3DLine(*it1, *it2, irr::video::SColor(255, 255, 0, 0));
+                            driver->draw3DLine(*it1, *it2,
+    irr::video::SColor(255, 255, 0, 0));
                     }
                     break;
 
