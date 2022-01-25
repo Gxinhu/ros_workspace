@@ -32,6 +32,7 @@
 
 #include <assert.h>
 #include <float.h>
+#include <ros/ros.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -952,7 +953,9 @@ namespace ratslam {
           experience = &experiences[pcvt->exps[i]];
           delta_pc = get_delta_pc(experience->x_pc, experience->y_pc,
                                   experience->th_pc);
-
+          ROS_DEBUG("当前的 View Template 数据:  %d/%zu, %d,%f, %f, %f",
+                    current_vt, visual_templates.size(), i, experience->x_pc,
+                    experience->y_pc, experience->th_pc);
           if (delta_pc < min_delta) {
             min_delta = delta_pc;
             min_delta_id = pcvt->exps[i];

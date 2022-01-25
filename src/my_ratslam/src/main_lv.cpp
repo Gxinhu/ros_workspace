@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
   //回调函数为boost::bind(image_callback, _1, &pub_vt),接受订阅话题的参数
   // boost::bind为绑定函数，参见https://blog.csdn.net/byxdaz/article/details/71527369
   image_transport::Subscriber sub
-      = it.subscribe(topic_root + "/camera/image", 0,
+      = it.subscribe(topic_root + "/camera/image", 1,
                      boost::bind(image_callback, _1, &pub_vt));
 
 #ifdef HAVE_IRRLICHT

@@ -31,6 +31,7 @@
 #include "experience_map.h"
 
 #include <float.h>
+#include <ros/ros.h>
 
 #include <iostream>
 #include <queue>
@@ -128,7 +129,7 @@ namespace ratslam {
           link_to = &experiences[link->exp_to_id];        // e1
 
           //%             //% work out where e0 thinks e1 (x,y) should be based
-          //on the stored %             //% link information
+          // on the stored %             //% link information
           //根据e0和link估计e1的位置
           lx = link_from->x_m
                + link->d * cos(link_from->th_rad + link->heading_rad);
@@ -136,9 +137,9 @@ namespace ratslam {
                + link->d * sin(link_from->th_rad + link->heading_rad);
 
           //%             //% correct e0 and e1 (x,y) by equal but opposite
-          //amounts %             //% a 0.5 correction parameter means that e0
-          //and e1 will be fully %             //% corrected based on e0's link
-          //information
+          // amounts %             //% a 0.5 correction parameter means that e0
+          // and e1 will be fully %             //% corrected based on e0's link
+          // information
           // 修正link_from的位置根据其指向的节点
           link_from->x_m += (link_to->x_m - lx) * EXP_CORRECTION;
           link_from->y_m += (link_to->y_m - ly) * EXP_CORRECTION;
@@ -147,14 +148,14 @@ namespace ratslam {
           link_to->y_m -= (link_to->y_m - ly) * EXP_CORRECTION;
 
           //%             //% determine the angle between where e0 thinks e1's
-          //facing %             //% should be based on the link information
+          // facing %             //% should be based on the link information
           df = get_signed_delta_rad(link_from->th_rad + link->facing_rad,
                                     link_to->th_rad);
 
           //%             //% correct e0 and e1 facing by equal but opposite
-          //amounts %             //% a 0.5 correction parameter means that e0
-          //and e1 will be fully %             //% corrected based on e0's link
-          //information
+          // amounts %             //% a 0.5 correction parameter means that e0
+          // and e1 will be fully %             //% corrected based on e0's link
+          // information
           link_from->th_rad
               = clip_rad_180(link_from->th_rad + df * EXP_CORRECTION);
           link_to->th_rad = clip_rad_180(link_to->th_rad - df * EXP_CORRECTION);

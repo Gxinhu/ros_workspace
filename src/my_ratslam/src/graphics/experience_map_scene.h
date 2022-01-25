@@ -38,19 +38,22 @@
 #include "../utils/utils.h"
 
 #define _USE_MATH_DEFINES
+#include <ros/console.h>
+
 #include <cmath>
 
 #include "path_node.h"
+
 
 namespace ratslam {
 
   class ExperienceMapScene {
   public:
     ExperienceMapScene(ptree &settings, ExperienceMap *in_map)
-        : exp_map_scene(NULL),
-          exp_map_path(NULL),
-          exp_map_goal_path(NULL),
-          exp_map_exps(NULL),
+        : exp_map_scene(nullptr),
+          exp_map_path(nullptr),
+          exp_map_goal_path(nullptr),
+          exp_map_exps(nullptr),
           map(in_map) {
       int width = 800;
       int height = 800;

@@ -113,6 +113,7 @@ void template_callback(ratslam_ros::ViewTemplateConstPtr vt,
 }
 
 int main(int argc, char *argv[]) {
+  setlocale(LC_ALL, "");
   ROS_INFO_STREAM(
       argv[0]
       << " - openRatSLAM Copyright (C) 2012 David Ball and Scott Heath");
